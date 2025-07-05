@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { TrendingUp, Users, Sparkles, ArrowRight, History } from 'lucide-react';
 import Header from '@/components/Header';
 import CreatePredictionModal from '@/components/CreatePredictionModal';
+import LoginModal from '@/components/LoginModal';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
@@ -12,18 +13,7 @@ import { Progress } from '@/components/ui/Progress';
 import { Calendar, Check, User, X } from 'lucide-react';
 import { User as UserType } from '@/types';
 import { AuroraBackground } from '@/components/ui/aurora-background';
-
-// Mock data for development
-const mockUser: UserType = {
-  id: 'user1',
-  email: 'user@example.com',
-  displayName: 'Test User',
-  xp: 1250,
-  level: 3,
-  badges: ['first_prediction', 'early_adopter'],
-  createdAt: new Date(),
-  lastActive: new Date()
-};
+import { createUser, getUserByEmail } from '@/services/firebase';
 
 // --- VERİ MODELİ (API'den geleceğini varsayalım) ---
 // Her bir tahmin kartı için gerekli verileri içeren bir dizi oluşturalım.
@@ -199,16 +189,75 @@ const PredictionCard: React.FC<{ prediction: PredictionData; isPast?: boolean }>
 export default function Home() {
   const [user, setUser] = useState<UserType | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Initialize with mock data
+  // Initialize with mock data - remove this when Firebase is fully integrated
   useEffect(() => {
-    setUser(mockUser);
+    // Don't auto-login with mock data anymore
+    // setUser(mockUser);
   }, []);
 
-  const handleLogin = () => {
-    console.log('Login clicked');
-    setUser(mockUser);
+  const handleLogin = async (email: string) => {
+    setIsLoading(true);
+    try {
+      console.log(`🔐 Giriş işlemi başlatılıyor: ${email}`);
+      
+      // 1. Email ile mevcut kullanıcı kontrolü yap
+      const existingUser = await getUserByEmail(email);
+      
+      if (existingUser) {
+        // Mevcut kullanıcı ile giriş yap
+        // Convert Firebase user to app user format
+        const appUser: UserType = {
+          id: existingUser.id,
+          email: existingUser.email || '',
+          displayName: existingUser.email?.split('@')[0] || 'User',
+          xp: existingUser.xp,
+          level: Math.floor(existingUser.xp / 500) + 1, // Calculate level from XP
+          badges: existingUser.badges,
+          createdAt: existingUser.createdAt,
+          lastActive: new Date()
+        };
+        
+        setUser(appUser);
+        
+        console.log(`🔓 Mevcut hesap ile giriş yapıldı: ${existingUser.id}`);
+        
+        alert(`🔓 Hoş geldin!\n👤 Mevcut hesabınla giriş yapıldı\n💎 Mevcut XP: ${existingUser.xp}\n✅ Doğru Tahmin: ${existingUser.correctPredictions}\n📊 Toplam Tahmin: ${existingUser.totalPredictions}`);
+      } else {
+        // Yeni kullanıcı oluştur
+        const userId = await createUser({
+          email: email,
+          xp: 0,
+          correctPredictions: 0,
+          totalPredictions: 0,
+          badges: []
+        });
+        
+        const appUser: UserType = {
+          id: userId,
+          email: email,
+          displayName: email.split('@')[0],
+          xp: 0,
+          level: 1,
+          badges: [],
+          createdAt: new Date(),
+          lastActive: new Date()
+        };
+        
+        setUser(appUser);
+        
+        console.log(`✨ Yeni hesap oluşturuldu: ${userId}`);
+        
+        alert(`✨ Hoş geldin!\n👤 Yeni hesabın oluşturuldu\n🎯 Başlangıç XP: 0\n\n💡 Tahmin oluşturun veya mevcut tahminlere oy verin!`);
+      }
+    } catch (error) {
+      console.error('Giriş hatası:', error);
+      alert('Giriş hatası: ' + error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleLogout = () => {
@@ -241,7 +290,7 @@ export default function Home() {
       <Header
         user={user || undefined}
         onCreatePrediction={() => setIsCreateModalOpen(true)}
-        onLogin={handleLogin}
+        onLogin={() => setIsLoginModalOpen(true)}
         onLogout={handleLogout}
       />
       
@@ -388,6 +437,14 @@ export default function Home() {
           </div>
         </section>
       </main>
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLogin={handleLogin}
+        isLoading={isLoading}
+      />
 
       {/* Create Prediction Modal */}
       <CreatePredictionModal
