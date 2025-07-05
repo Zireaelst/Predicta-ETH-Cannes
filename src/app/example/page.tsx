@@ -21,7 +21,7 @@ export default function ExamplePage() {
             </p>
           </CardContent>
           <CardFooter>
-            <Button variant="primary">Learn More</Button>
+            <Button variant="default">Learn More</Button>
           </CardFooter>
         </Card>
 
@@ -63,8 +63,8 @@ export default function ExamplePage() {
       <div className="mt-12 text-center">
         <h2 className="text-2xl font-semibold mb-4">Button Examples</h2>
         <div className="flex gap-4 justify-center items-center flex-wrap">
-          <Button variant="primary" size="sm">Small Primary</Button>
-          <Button variant="secondary" size="md">Medium Secondary</Button>
+          <Button variant="default" size="sm">Small Primary</Button>
+          <Button variant="secondary" size="default">Medium Secondary</Button>
           <Button variant="outline" size="lg">Large Outline</Button>
           <Button disabled>Disabled Button</Button>
         </div>
