@@ -1,17 +1,17 @@
-'use client';
+"use client"
 
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { TrendingUp, Users, Sparkles, ArrowRight, History } from 'lucide-react';
-import Header from '@/components/Header';
-import CreatePredictionModal from '@/components/CreatePredictionModal';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import Button from '@/components/ui/Button';
-import { Progress } from '@/components/ui/Progress';
-import { Calendar, Check, User, X } from 'lucide-react';
-import { User as UserType } from '@/types';
-import { AuroraBackground } from '@/components/ui/aurora-background';
+import { AuroraBackground } from "./ui/aurora-background"
+import { motion } from "framer-motion"
+import { useState, useEffect } from "react"
+import { TrendingUp, Sparkles, ArrowRight, History } from 'lucide-react'
+import Header from '@/components/Header'
+import CreatePredictionModal from '@/components/CreatePredictionModal'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Badge } from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import { Progress } from '@/components/ui/Progress'
+import { Calendar, Check, User, X, Users } from 'lucide-react'
+import { User as UserType } from '@/types'
 
 // Mock data for development
 const mockUser: UserType = {
@@ -23,10 +23,9 @@ const mockUser: UserType = {
   badges: ['first_prediction', 'early_adopter'],
   createdAt: new Date(),
   lastActive: new Date()
-};
+}
 
 // --- VERİ MODELİ (API'den geleceğini varsayalım) ---
-// Her bir tahmin kartı için gerekli verileri içeren bir dizi oluşturalım.
 const predictionsData = [
   {
     id: 1,
@@ -39,7 +38,7 @@ const predictionsData = [
     yesPercentage: 57,
     noPercentage: 43,
     userVote: "Evet",
-    result: null, // Sonuç belli değilse null
+    result: null,
   },
   {
     id: 2,
@@ -64,10 +63,10 @@ const predictionsData = [
     creator: "@TechGuru",
     yesPercentage: 75,
     noPercentage: 25,
-    userVote: null, // Kullanıcı oy kullanmamış
+    userVote: null,
     result: null,
   },
-];
+]
 
 // Geçmiş tahminler verisi
 const pastPredictionsData = [
@@ -113,21 +112,21 @@ const pastPredictionsData = [
     result: "Hayır",
     correctPrediction: false,
   },
-];
+]
 
-type PredictionData = typeof predictionsData[0] | typeof pastPredictionsData[0];
+type PredictionData = typeof predictionsData[0] | typeof pastPredictionsData[0]
 
 // --- TEK BİR TAHMİN KARTI BİLEŞENİ ---
 const PredictionCard: React.FC<{ prediction: PredictionData; isPast?: boolean }> = ({ prediction, isPast = false }) => {
   const { 
     title, description, status, endDate, totalVotes, creator, 
     yesPercentage, noPercentage, userVote, result
-  } = prediction;
+  } = prediction
   
-  const correctPrediction = 'correctPrediction' in prediction ? prediction.correctPrediction : undefined;
+  const correctPrediction = 'correctPrediction' in prediction ? prediction.correctPrediction : undefined
 
   return (
-    <Card className="flex flex-col h-full hover:border-primary transition-colors duration-300">
+    <Card className="flex flex-col h-full hover:border-primary transition-colors duration-300 bg-white/80 backdrop-blur-sm border-white/20">
       <CardHeader className="relative">
         <Badge variant={status.variant} className={`absolute top-4 right-4 ${'className' in status ? status.className : ''}`}>
           {status.text}
@@ -193,60 +192,59 @@ const PredictionCard: React.FC<{ prediction: PredictionData; isPast?: boolean }>
         )}
       </CardFooter>
     </Card>
-  );
-};
+  )
+}
 
-export default function Home() {
-  const [user, setUser] = useState<UserType | null>(null);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+export default function AuroraBackgroundDemo() {
+  const [user, setUser] = useState<UserType | null>(null)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   // Initialize with mock data
   useEffect(() => {
-    setUser(mockUser);
-  }, []);
+    setUser(mockUser)
+  }, [])
 
   const handleLogin = () => {
-    console.log('Login clicked');
-    setUser(mockUser);
-  };
+    console.log('Login clicked')
+    setUser(mockUser)
+  }
 
   const handleLogout = () => {
-    console.log('Logout clicked');
-    setUser(null);
-  };
+    console.log('Logout clicked')
+    setUser(null)
+  }
 
   const handleCreatePrediction = async (predictionData: {
-    question: string;
-    description: string;
-    category: string;
-    endDate: Date;
+    question: string
+    description: string
+    category: string
+    endDate: Date
   }) => {
-    if (!user) return;
+    if (!user) return
     
-    setIsLoading(true);
+    setIsLoading(true)
     try {
-      console.log('Creating prediction:', predictionData);
-      setIsCreateModalOpen(false);
+      console.log('Creating prediction:', predictionData)
+      setIsCreateModalOpen(false)
     } catch (error) {
-      console.error('Error creating prediction:', error);
+      console.error('Error creating prediction:', error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
-    <div className="min-h-screen">
-      {/* Header - Fixed at the top */}
-      <Header
-        user={user || undefined}
-        onCreatePrediction={() => setIsCreateModalOpen(true)}
-        onLogin={handleLogin}
-        onLogout={handleLogout}
-      />
-      
-      {/* Hero Section with Aurora Background */}
-      <AuroraBackground>
+    <AuroraBackground>
+      <div className="relative z-10 w-full">
+        <Header
+          user={user || undefined}
+          onCreatePrediction={() => setIsCreateModalOpen(true)}
+          onLogin={handleLogin}
+          onLogout={handleLogout}
+        />
+
+        {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -254,42 +252,42 @@ export default function Home() {
         >
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
                 Predicta
               </span>
               <br />
-              <span className="text-2xl md:text-4xl text-slate-800 font-semibold">
+              <span className="text-2xl md:text-4xl text-white/80">
                 Geleceği Tahmin Et, Kazanmaya Başla
               </span>
             </h1>
-            <p className="text-lg text-slate-700 max-w-2xl mx-auto mb-8 font-medium">
+            <p className="text-lg text-white/70 max-w-2xl mx-auto mb-8">
               Sosyal tahmin platformunda geleceği öngör, doğru tahminlerle XP kazan ve liderlik tablosunda yüksel!
             </p>
             
             {/* İstatistik Kartları */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
-              <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-md border-slate-200 hover:shadow-xl transition-all duration-300">
+              <Card className="border-0 shadow-lg bg-white/10 backdrop-blur-sm border-white/20">
                 <CardContent className="p-6 text-center">
-                  <div className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-500 to-blue-700 bg-clip-text text-transparent">
+                  <div className="text-4xl font-bold mb-2 text-blue-400">
                     3
                   </div>
-                  <p className="text-slate-600 font-semibold text-sm">Aktif Tahmin</p>
+                  <p className="text-white/80">Aktif Tahmin</p>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-md border-slate-200 hover:shadow-xl transition-all duration-300">
+              <Card className="border-0 shadow-lg bg-white/10 backdrop-blur-sm border-white/20">
                 <CardContent className="p-6 text-center">
-                  <div className="text-4xl font-bold mb-2 bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">
+                  <div className="text-4xl font-bold mb-2 text-green-400">
                     479
                   </div>
-                  <p className="text-slate-600 font-semibold text-sm">Toplam Oy</p>
+                  <p className="text-white/80">Toplam Oy</p>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-md border-slate-200 hover:shadow-xl transition-all duration-300">
+              <Card className="border-0 shadow-lg bg-white/10 backdrop-blur-sm border-white/20">
                 <CardContent className="p-6 text-center">
-                  <div className="text-4xl font-bold mb-2 bg-gradient-to-r from-purple-500 to-indigo-600 bg-clip-text text-transparent">
+                  <div className="text-4xl font-bold mb-2 text-purple-400">
                     1250
                   </div>
-                  <p className="text-slate-600 font-semibold text-sm">Senin XP&apos;in</p>
+                  <p className="text-white/80">Senin XP&apos;in</p>
                 </CardContent>
               </Card>
             </div>
@@ -302,7 +300,7 @@ export default function Home() {
                 <Button
                   size="lg"
                   onClick={() => setIsCreateModalOpen(true)}
-                  className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white px-8 py-4 shadow-lg"
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 border-0"
                 >
                   <Sparkles className="w-5 h-5 mr-2" />
                   Yeni Tahmin Oluştur
@@ -312,20 +310,17 @@ export default function Home() {
             )}
           </div>
         </motion.div>
-      </AuroraBackground>
 
-      {/* Main Content - Outside Aurora Background */}
-      <main className="bg-background">
         {/* Popüler Tahminler Bölümü */}
         <section className="w-full py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             {/* Başlık Bölümü */}
             <div className="flex justify-between items-center mb-8">
               <div>
-                <h2 className="text-3xl font-bold tracking-tight">Popüler Tahminler</h2>
-                <p className="text-muted-foreground mt-1">En çok oy alan ve tartışılan tahminler</p>
+                <h2 className="text-3xl font-bold tracking-tight text-white">Popüler Tahminler</h2>
+                <p className="text-white/70 mt-1">En çok oy alan ve tartışılan tahminler</p>
               </div>
-              <Button variant="ghost" className="text-muted-foreground">
+              <Button variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10">
                 <TrendingUp className="mr-2 h-4 w-4" />
                 Trending
               </Button>
@@ -353,15 +348,15 @@ export default function Home() {
         </section>
 
         {/* Geçmiş Tahminler Bölümü */}
-        <section className="bg-muted/30 w-full py-12 px-4 sm:px-6 lg:px-8">
+        <section className="w-full py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             {/* Başlık Bölümü */}
             <div className="flex justify-between items-center mb-8">
               <div>
-                <h2 className="text-3xl font-bold tracking-tight">Geçmiş Tahminler</h2>
-                <p className="text-muted-foreground mt-1">Sonuçlanmış tahminler ve performansın</p>
+                <h2 className="text-3xl font-bold tracking-tight text-white">Geçmiş Tahminler</h2>
+                <p className="text-white/70 mt-1">Sonuçlanmış tahminler ve performansın</p>
               </div>
-              <Button variant="ghost" className="text-muted-foreground">
+              <Button variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10">
                 <History className="mr-2 h-4 w-4" />
                 Tümünü Gör
               </Button>
@@ -387,15 +382,15 @@ export default function Home() {
             </motion.div>
           </div>
         </section>
-      </main>
 
-      {/* Create Prediction Modal */}
-      <CreatePredictionModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreatePrediction}
-        isLoading={isLoading}
-      />
-    </div>
-  );
+        {/* Create Prediction Modal */}
+        <CreatePredictionModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSubmit={handleCreatePrediction}
+          isLoading={isLoading}
+        />
+      </div>
+    </AuroraBackground>
+  )
 }
